@@ -1,0 +1,35 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "MapaLevel.tmx",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "MapaLevel.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 610.6666666666667,
+                "y": 513.3333333333334
+            }
+        },
+        "MapaLevel.tmx#tileset_walls": {
+            "scaleInDock": 1
+        }
+    },
+    "last.imagePath": "C:/Users/EdgarNovasPaniagua/Documents/PhaserProjects/Platformer2D/assets/tilesets",
+    "map.height": 25,
+    "map.lastUsedFormat": "tmx",
+    "map.renderOrder": null,
+    "map.width": 40,
+    "openFiles": [
+        "MapaLevel.tmx"
+    ],
+    "project": "Mapa Level1.tiled-project",
+    "recentFiles": [
+        "MapaLevel.tmx"
+    ],
+    "tileset.embedInMap": true
+}

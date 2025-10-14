@@ -1,0 +1,24 @@
+class enemyPrefab extends Phaser.GameObjects.Sprite
+{
+    //_enemy = new enemyPrefab(this,_posX,_posY);
+    constructor(_scene,_posX,_posY,_spriteTag='enemy')
+    {
+        super(_scene,_posX,_posY,_spriteTag);
+        _scene.add.existing(this);
+        this.setOrigin(0,1);
+        this.health = 2;
+        this.anims.play('idleEnemy');
+    }
+
+    
+    preUpdate(time,delta)
+    {
+        if(this.y>=config.height)
+        {
+            this.setActive(false);
+        }
+        super.preUpdate(time,delta);
+    }
+
+
+}
