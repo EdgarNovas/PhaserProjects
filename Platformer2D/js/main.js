@@ -5,6 +5,8 @@ const gamePrefs=
     levelWidth:1280,// 40*32
     levelHeight:800, //25*32
     GRAVITY:1000,
+    HERO_SPEED:200,
+    HERO_JUMP:450
 }
 
 var config = 

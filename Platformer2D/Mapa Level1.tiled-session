@@ -9,18 +9,23 @@
     "fileStates": {
         "MapaLevel.tmx": {
             "scale": 0.75,
-            "selectedLayer": 0,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 610.6666666666667,
-                "y": 513.3333333333334
+                "x": 639.3333333333333,
+                "y": 450.6666666666666
             }
+        },
+        "MapaLevel.tmx#tileset_moss": {
+            "scaleInDock": 1
         },
         "MapaLevel.tmx#tileset_walls": {
             "scaleInDock": 1
         }
     },
+    "last.exportedFilePath": "C:/Users/EdgarNovasPaniagua/Documents/PhaserProjects/Platformer2D/assets/maps",
     "last.imagePath": "C:/Users/EdgarNovasPaniagua/Documents/PhaserProjects/Platformer2D/assets/tilesets",
     "map.height": 25,
+    "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
     "map.lastUsedFormat": "tmx",
     "map.renderOrder": null,
     "map.width": 40,
