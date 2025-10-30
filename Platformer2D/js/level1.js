@@ -25,11 +25,18 @@ class level1 extends Phaser.Scene
         this.load.setPath('assets/maps');
         this.load.tilemapTiledJSON('level1','level1.json');
 
+        this.load.setPath('assets/sprites/spritesheets');
+        
+
+        this.load.spritesheet('enemy', 'jumper.png',
+        { frameWidth:32,frameHeight:32  });
+
     }
 
     create()
     {
-        this.add.tileSprite(0,0,gamePrefs.gameWidth,gamePrefs.gameHeight,'bg').setOrigin(0);
+        this.add.tileSprite(0,0,gamePrefs.levelWidth,gamePrefs.levelHeight,'bg').setOrigin(0);
+        //this.add.tileSprite(0,0,gamePrefs.gameWidth,gamePrefs.gameHeight,'bg').setOrigin(0);
 
         this.map = this.add.tilemap('level1');
         this.map.addTilesetImage('tileset_walls');
@@ -45,6 +52,8 @@ class level1 extends Phaser.Scene
         this.entry = this.add.sprite(65,268,'entry');
         this.hero = this.physics.add.sprite(65,100,'hero');
 
+        this.enemy = new enemy(this,250,268);
+
         
         //this.entry.body.setAllowGravity(false);
         //this.entry.body.setImmovable(true);
@@ -53,8 +62,12 @@ class level1 extends Phaser.Scene
         this.physics.add.collider(this.hero, this.walls);
 
 
+
         this.cursors = this.input.keyboard.createCursorKeys();
         this.loadAnimations();
+
+        this.cameras.main.startFollow(this.hero);
+        this.cameras.main.setBounds(0,0,gamePrefs.levelWidth,gamePrefs.levelHeight);
     }
 
 
@@ -72,12 +85,28 @@ class level1 extends Phaser.Scene
             this.hero.body.setVelocityX(gamePrefs.HERO_SPEED);
             this.hero.setFlipX(false);
             this.hero.anims.play('run',true);
+            
         }
         else
         {
             this.hero.body.setVelocityX(0);
             this.hero.anims.stop().setFrame(0);
         }
+
+        if(this.cursors.space.isDown && this.hero.body.onFloor() 
+        //&& this.hero.body.blocked.down
+        && Phaser.Input.Keyboard.DownDuration(this.cursors.space, 250)
+        )
+        {
+            this.hero.body.setVelocityY(gamePrefs.HERO_JUMP);
+        }
+        
+        if(!this.hero.body.onFloor())
+        {
+            this.hero.anims.stop().setFrame(6);
+        }
+
+
         
     }
 
@@ -88,6 +117,16 @@ class level1 extends Phaser.Scene
         ({
             key:'run',
             frames: this.anims.generateFrameNumbers('hero', {start:2,end:5}),
+            framerate:10,
+            repeat: -1,
+            yoyo:false,
+
+        });
+
+        this.anims.create
+        ({
+            key:'enemyrun',
+            frames: this.anims.generateFrameNumbers('enemy', {start:0,end:3}),
             framerate:10,
             repeat: -1,
             yoyo:false,
