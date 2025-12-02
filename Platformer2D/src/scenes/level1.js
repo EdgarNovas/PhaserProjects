@@ -1,4 +1,13 @@
-class level1 extends Phaser.Scene
+import { HERO, GAME_SIZE, LEVEL_SIZE, SCALE } from "../core/constants.js";
+import { Jumper } from '../entities/enemies/Jumper.js';
+import { Slime } from '../entities/enemies/Slime.js';
+import { Hero } from '../entities/Hero.js';
+import { Gem } from '../entities/Gem.js';
+import { Door } from '../entities/Door.js';
+
+import { EVENTS } from '../core/events.js';
+
+export class Level1 extends Phaser.Scene
 {
     constructor()
     {
@@ -6,133 +15,248 @@ class level1 extends Phaser.Scene
     }
 
     preload()
-    {
-        this.cameras.main.setBackgroundColor("666");
-        this.load.setPath('assets/sprites');
-        this.load.image('bg', 'bg_green_tile.png');
-        //Cargar el mapa
+    { //Carga assets en memoria
+        this.cameras.main.setBackgroundColor('#666');
+        this.load.setPath('assets/sprites/backgrounds');
+        this.load.image('bg','bg_green_tile.png');
 
-        this.load.spritesheet('hero', 'hero.png',
-        { frameWidth:32,frameHeight:32  });
+        //this.load.setPath('assets/sprites/static');
+        //this.load.image('entry','spr_door_closed_0.png');
 
-        this.load.image('entry', 'spr_door_closed_0.png');
-     
-
-        this.load.setPath('assets/tilesets');
-        this.load.image('tileset_walls', 'tileset_walls.png');
-        this.load.image('tileset_moss', 'tileset_moss.png');
-
-        this.load.setPath('assets/maps');
-        this.load.tilemapTiledJSON('level1','level1.json');
+        //this.load.setPath('assets/sprites/ui');
+        //this.load.image('gemUI','spr_gui_gem_0.png');
 
         this.load.setPath('assets/sprites/spritesheets');
-        
+        this.load.spritesheet('hero','hero.png',
+        {frameWidth:32,frameHeight:32});
+        this.load.spritesheet('jumper','jumper.png',
+        {frameWidth:32,frameHeight:32});
+        this.load.spritesheet('slime','slime.png',
+        {frameWidth:32,frameHeight:32});
+        this.load.spritesheet('gem','gem.png',
+        {frameWidth:32,frameHeight:32});
+        this.load.spritesheet('door','door.png',
+        {frameWidth:32,frameHeight:40});
+        //this.load.spritesheet('healthUI','health.png',
+        //{frameWidth:128,frameHeight:28});
 
-        this.load.spritesheet('enemy', 'jumper.png',
-        { frameWidth:32,frameHeight:32  });
+        this.load.setPath('assets/tiled/tilesets');   
+        this.load.image('tileset_walls','tileset_walls.png');
+        this.load.image('tileset_moss','tileset_moss.png');
 
+        this.load.setPath('assets/tiled/maps');
+        this.load.tilemapTiledJSON('level1','level1.json');
+        //this.load.tilemapTiledJSON('level'+nivelActual,'level'+nivelActual+'.json');
+
+        //this.load.setPath('assets/fonts/');
+        //this.load.bitmapFont('UIFont','font.png','font.fnt');
     }
 
     create()
-    {
-        this.add.tileSprite(0,0,gamePrefs.levelWidth,gamePrefs.levelHeight,'bg').setOrigin(0);
-        //this.add.tileSprite(0,0,gamePrefs.gameWidth,gamePrefs.gameHeight,'bg').setOrigin(0);
+    { //Pinta assets en pantalla
+        //Pintamos el fondo
+        this.add.tileSprite(0,0,LEVEL_SIZE.LEVEL1_WIDTH, LEVEL_SIZE.LEVEL1_HEIGHT,'bg')
+        //this.add.tileSprite(0,0,gamePrefs.level1Width,gamePrefs.level1Height,'bg')
+        //this.add.tileSprite(0,0,gamePrefs.gameWidth,gamePrefs.gameHeight,'bg')
+        .setOrigin(0);
+        //Pintamos el nivel
+        //Cargo el JSON
+        //this.map = this.add.tilemap('level1'); //DEPRECATED
+        this.map = this.make.tilemap({key:'level1'});
+        //Cargo los tilesets
+        // IMPORTANTE: el primer argumento debe coincidir con el "Nombre del tileset" en Tiled.
+        // El segundo argumento es la 'key' del asset cargado con this.load.image(...), que cambiamos
+        // por el tileset_object del paso previo
+        // Si coinciden, puedo dejar sólo 1
+        const ts_walls = this.map.addTilesetImage('tileset_walls');
+        //this.map.addTilesetImage('tileset_walls','tileset_walls');
+        const ts_moss = this.map.addTilesetImage('tileset_moss');
+        //Pinto las CAPAS/LAYERS
+        this.walls = this.map.createLayer('layer_walls',ts_walls);
+        this.map.createLayer('layer_moss_up',ts_moss);
+        this.map.createLayer('layer_moss_left',ts_moss);
+        this.map.createLayer('layer_moss_right',ts_moss);
+        this.map.createLayer('layer_moss_down',ts_moss);
 
-        this.map = this.add.tilemap('level1');
-        this.map.addTilesetImage('tileset_walls');
-        this.map.addTilesetImage('tileset_moss');
-        //Pinto capas del mapa
-        this.walls = this.map.createLayer('layer_walls','tileset_walls');
-        this.map.createLayer('layer_moss','tileset_moss');
-
-        //Defino con que  colisiona la layer_walls
+        //Defino con qué se colisiona en la layer_walls
         //this.map.setCollisionBetween(1,11,true,true,'layer_walls');
-        //Phaser lo interpreta el -1 como 0 en el JSON
-        this.map.setCollisionByExclusion(-1,true,true,'layer_walls');
-        this.entry = this.add.sprite(65,268,'entry');
-        this.hero = this.physics.add.sprite(65,100,'hero');
+        //Ponemos -1, ya que phaser lo interpreta como un 0 en el json
+        //this.map.setCollisionByExclusion(-1,true,true,'layer_walls');
+        this.walls.setCollisionByExclusion([-1]);
 
-        this.enemy = new enemy(this,250,268);
-
-        
-        //this.entry.body.setAllowGravity(false);
-        //this.entry.body.setImmovable(true);
-
-        //this.physics.add.collider(this.hero, this.entry);
-        this.physics.add.collider(this.hero, this.walls);
-
-
-
-        this.cursors = this.input.keyboard.createCursorKeys();
         this.loadAnimations();
 
-        this.cameras.main.startFollow(this.hero);
-        this.cameras.main.setBounds(0,0,gamePrefs.levelWidth,gamePrefs.levelHeight);
-    }
+        //this.entry = this.add.sprite(65,268,'entry');
+        //this.entry = this.physics.add.sprite(65,268,'entry');
+        //this.entry.body.setAllowGravity(false);
+        //this.entry.body.setImmovable(true);
+        
+        //Lo cambio por la instancia ->this.hero = this.physics.add.sprite(65,100,'hero');   
+        
+        //this.hero = new Hero(this, 65, 100,'hero');
 
+        //this.physics.add.collider(this.hero,this.entry);
+        //Me lo llevo al Hero.js -> this.physics.add.collider(this.hero,this.walls);
+        //Me lo llevo al Hero.js -> this.cursors = this.input.keyboard.createCursorKeys();
 
-    update()
-    {
-        if(this.cursors.left.isDown)
+        //Leer e instanciar todos las entidades/entities del nivel
+        this.entities = this.map.getObjectLayer('level1_entities');
+        console.log(this.entities);
+        this.entities.objects.forEach(function(entity)
         {
-            this.hero.body.setVelocityX(-gamePrefs.HERO_SPEED);
-            this.hero.setFlipX(true);
-            this.hero.anims.play('run',true);
+            //console.log(entity);
+            switch(entity.type)
+            {
+                case 'Jumper':
+                    let _jumper = new Jumper(this, entity.x,entity.y,entity.type.toLowerCase());
+                    _jumper.setHealth(entity.properties[0].value);
+                break;
+                case 'Gem':
+                    let _gem = new Gem(this, entity.x,entity.y,entity.type.toLowerCase());
+                    _gem.setValue(entity.properties[0].value);
+                break;
+                case 'Door':
+                    let _door = new Door(this, entity.x,entity.y,entity.type.toLowerCase());
+                    if(!entity.properties[0].value)
+                    {
+                        this.hero = new Hero(this, entity.x,entity.y,'hero');                            
+                    }
+                    _door.setState(entity.properties[0].value);
+                break;
+                default:
+                    console.log('Entidad no reconocida');
+                break;
+            }
+        },this);
 
-        }
-        else if(this.cursors.right.isDown) 
-        {
-            this.hero.body.setVelocityX(gamePrefs.HERO_SPEED);
-            this.hero.setFlipX(false);
-            this.hero.anims.play('run',true);
-            
-        }
-        else
-        {
-            this.hero.body.setVelocityX(0);
-            this.hero.anims.stop().setFrame(0);
-        }
+        this.game.events.emit(EVENTS.HERO_READY, this.hero);
 
-        if(this.cursors.space.isDown && this.hero.body.onFloor() 
-        //&& this.hero.body.blocked.down
-        && Phaser.Input.Keyboard.DownDuration(this.cursors.space, 250)
+        /*
+        this.healthUI = this.add.sprite(10,10,'healthUI',HERO.MAX_LIVES)
+        .setOrigin(0)
+        .setScrollFactor(0);
+
+        this.gemUI = this.add.sprite(GAME_SIZE.WIDTH-80,20,'gemUI')
+        .setScrollFactor(0);
+
+        this.gems = 0;
+
+        /*this.gemUIText = this.add.text(
+            GAME_SIZE.WIDTH-10,
+            23,
+            "x00",
+            {
+                fontFamily: 'Arial',
+                fill: '#FFFFFF',
+                fontSize:20                
+            }
+        ).setOrigin(1,0)
+        
+        this.gemUIText = this.add.bitmapText(
+        GAME_SIZE.WIDTH-5,17,
+        'UIFont',
+        'x00',
+        20
         )
-        {
-            this.hero.body.setVelocityY(gamePrefs.HERO_JUMP);
-        }
-        
-        if(!this.hero.body.onFloor())
-        {
-            this.hero.anims.stop().setFrame(6);
-        }
+        .setOrigin(1,0)
+        .setScrollFactor(0);
+        */
 
+        //this.jumper = new Jumper(this,240,304);
+        //this.slime = new Slime(this,656,272);
 
-        
+        //this.cameras.main.startFollow(this.hero);
+        //this.cameras.main.setBounds(0,0,gamePrefs.level1Width,gamePrefs.level1Height);
+        //this.cameras.main.startFollow(this.hero).setBounds(0,0,
+        //gamePrefs.level1Width,gamePrefs.level1Height);
+
+        this.scene.launch('hud');
+
+        this.cameras.main.startFollow(this.hero).setBounds(0,0,
+            LEVEL_SIZE.LEVEL1_WIDTH,LEVEL_SIZE.LEVEL1_HEIGHT).setZoom(SCALE.ZOOM);
     }
-
 
     loadAnimations()
     {
-        this.anims.create
-        ({
-            key:'run',
-            frames: this.anims.generateFrameNumbers('hero', {start:2,end:5}),
-            framerate:10,
-            repeat: -1,
-            yoyo:false,
-
+        this.anims.create(
+        {
+            key: 'run',
+            frames:this.anims.generateFrameNumbers('hero', 
+            {start:2, end: 5}),
+            frameRate: 10,
+            repeat: -1
+        });
+        
+        this.anims.create(
+        {
+            key: 'run_jumper',
+            frames:this.anims.generateFrameNumbers('jumper', 
+            {start:0, end: 3}),
+            frameRate: 10,
+            repeat: -1
         });
 
-        this.anims.create
-        ({
-            key:'enemyrun',
-            frames: this.anims.generateFrameNumbers('enemy', {start:0,end:3}),
-            framerate:10,
-            repeat: -1,
-            yoyo:false,
+        this.anims.create(
+        {
+            key: 'run_slime',
+            frames:this.anims.generateFrameNumbers('slime', 
+            {start:0, end: 3}),
+            frameRate: 10,
+            repeat: -1
+        });
 
+        this.anims.create(
+        {
+            key: 'gem_idle',
+            frames:this.anims.generateFrameNumbers('gem', 
+            {start:0, end: 4}),
+            frameRate: 10,
+            repeat: -1
+        });
+        
+        this.anims.create(
+        {
+            key: 'door_idle',
+            frames:this.anims.generateFrameNumbers('door', 
+            {start:1, end: 3}),
+            frameRate: 10,
+            repeat: -1
         });
     }
 
+    /*Me lo llevo al Hero.js -> 
+    update()
+    {
+        if(this.cursors.left.isDown)
+        { //ME MUEVO A LA IZQUIERDA
+            this.hero.body.setVelocityX(-HERO.SPEED); // ← negativo a la izquierda    
+            this.hero.setFlipX(true); 
+            this.hero.anims.play('run',true);   
+        }else
+        if(this.cursors.right.isDown)
+        { //ME MUEVO A LA DERECHA
+            this.hero.body.setVelocityX(HERO.SPEED); 
+            this.hero.setFlipX(false);      
+            this.hero.anims.play('run',true);
+        }else
+        {
+            this.hero.body.setVelocityX(0);  
+            this.hero.anims.stop().setFrame(0); 
+        }
+        
+        if(this.cursors.space.isDown
+           && this.hero.body.onFloor()
+           //&& this.hero.body.blocked.down  
+           && Phaser.Input.Keyboard.DownDuration(this.cursors.space,250))
+           
+        {
+            this.hero.body.setVelocityY(HERO.JUMP_FORCE);    
+        } 
 
-}
+        if(!this.hero.body.onFloor())
+        {
+            this.hero.anims.stop().setFrame(6);
+        }        
+    }
+    */
+} 

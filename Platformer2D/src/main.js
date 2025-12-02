@@ -1,46 +1,22 @@
-//Intelisense 
+//Cargamos el Intellisense
+/// <reference path="./types/phaser.d.ts" />
 
+//Importamos la configuración del motor
+import { buildConfig } from './core/config.js';
+//Importamos las escenas
+import { Level1 } from './scenes/Level1.js';
+//import { Level2 } from './scenes/Level2.js';
+import { Hud } from './ui/Hud.js';
 
+const game = new Phaser.Game
+(
+    buildConfig({
+    // Orden en el que se registran/arrancan
+    scenes: [
+      // Boot,    // si hay una escena de precarga
+      Level1,
+      Hud     // si se lanza luego en paralelo (ya lo veremos)
+    ],
+  })
+);
 
-const gamePrefs=
-{
-    gameWidth:960,
-    gameHeight:540,
-    levelWidth:1280,// 40*32
-    levelHeight:800, //25*32
-    GRAVITY:1000,
-    HERO_SPEED:200,
-    HERO_JUMP:-450,
-    ENEMY_SPEED: 150,
-}
-
-var config = 
-{
-    type: Phaser.AUTO,
-        width: gamePrefs.gameWidth,
-        height : gamePrefs.gameHeight,
-        scene: [level1],
-        render:
-        {
-            pixelArt: true
-        },
-        physics:
-        {
-            default: 'arcade',
-            arcade:
-            {
-                gravity:{y:gamePrefs.GRAVITY},
-                debug:true
-            }
-        },
-        scale:
-        {
-            mode:Phaser.Scale.FIT,
-            autoCenter:Phaser.Scale.CENTER_BOTH,
-            width: gamePrefs.gameWidth/2,
-            height: gamePrefs.gameHeight/2
-        }
-    
-}
-
-var juego = new Phaser.Game(config);
