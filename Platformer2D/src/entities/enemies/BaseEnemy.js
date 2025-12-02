@@ -29,7 +29,6 @@ export class BaseEnemy extends Phaser.Physics.Arcade.Sprite
 
         //Definimos colisiones
         this.setColliders();
-        this.setListeners();
     }
 
     setHealth(_value)
@@ -48,7 +47,16 @@ export class BaseEnemy extends Phaser.Physics.Arcade.Sprite
             )
         }
 
-      //No ponemos aqui el hero por si no lo creamos antes del enemigo
+        if (this.scene.hero) { //Por si hemos instanciado al Enemy antes de crear al hero
+            this.scene.physics.add.collider
+            (
+                this,
+                this.scene.hero,
+                this.scene.hero.hitHero,
+                null,
+                this.scene.hero
+            )
+        }
     }
 
     howItpatrols()
@@ -67,22 +75,6 @@ export class BaseEnemy extends Phaser.Physics.Arcade.Sprite
             this.body.setVelocityX(ENEMY.SPEED*this.direction);
         }
 
-    }
-
-    setListeners()
-    {
-        this.game.events.on(EVENTS.HERO_READY, this.onHeroReady, this);
-    }
-
-    onHeroReady()
-    {
-        if (this.game) { //Por si hemos instanciado al Enemy antes de crear la capa walls
-            this.scene.physics.add.collider
-            (
-                this,
-                this.scene.player
-            )
-        }
- 
+          
     }
 }
