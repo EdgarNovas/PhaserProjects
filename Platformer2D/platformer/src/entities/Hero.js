@@ -1,4 +1,5 @@
 import { HERO } from '../core/constants.js';
+import { EVENTS } from '../core/events.js';
 
 export class Hero extends Phaser.Physics.Arcade.Sprite 
 {
@@ -18,6 +19,7 @@ export class Hero extends Phaser.Physics.Arcade.Sprite
         this.setOrigin(.5,1);
         //El Hero tiene vida. Necesitaremos una variable de control y manipular la UI
         this.health = HERO.MAX_LIVES;
+
         this.setColliders();
 
         //Ajustar el tamaño del body
@@ -57,6 +59,8 @@ export class Hero extends Phaser.Physics.Arcade.Sprite
             else
             {
                 //actualizar la UI del shield
+                console.log(this.health);
+                this.scene.game.events.emit(EVENTS.HERO_DAMAGED,this.health);
                 //resetear la escena
                 this.body.reset(65,100);
                 this.scene.cameras.main.shake(500,0.05);

@@ -9,7 +9,7 @@ export class Slime extends BaseEnemy
 
     howItpatrols()
     {
-        return (this.body.blocked.left || !this.body.blocked.down);    
+        return (this.body.blocked.left || this.body.blocked.right || !this.body.blocked.down);    
     }
 }
 

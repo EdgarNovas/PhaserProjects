@@ -49,7 +49,7 @@ export class Hud extends Phaser.Scene {
     setListeners()
     {
         this.game.events.on(EVENTS.HERO_READY, this.onHeroReady, this);
-        //this.game.events.on(EVENTS.HERO_DAMAGED, this.onHeroDamaged, this);
+        this.game.events.on(EVENTS.HERO_DAMAGED, this.onHeroDamaged, this);
         //this.game.events.on(EVENTS.HERO_DIED, this.onHeroDied, this);
         this.game.events.on(EVENTS.GEM_COLLECTED, this.onGemCollected, this);     
     }
@@ -57,6 +57,13 @@ export class Hud extends Phaser.Scene {
     onHeroReady()
     {
         this.currentHealth = this.maxHealth;
+        this.updateHealthUI();   
+    }
+
+    onHeroDamaged(_newHealth)
+    {
+        console.log(_newHealth);
+        this.currentHealth = _newHealth;
         this.updateHealthUI();   
     }
 
