@@ -16,7 +16,9 @@ export class Level1 extends Phaser.Scene
 
     preload()
     { //Carga assets en memoria
+        
         this.cameras.main.setBackgroundColor('#666');
+        /*
         this.load.setPath('assets/sprites/backgrounds');
         this.load.image('bg','bg_green_tile.png');
 
@@ -50,12 +52,13 @@ export class Level1 extends Phaser.Scene
 
         //this.load.setPath('assets/fonts/');
         //this.load.bitmapFont('UIFont','font.png','font.fnt');
+        */
     }
 
     create()
     { //Pinta assets en pantalla
         //Pintamos el fondo
-        this.add.tileSprite(0,0,LEVEL_SIZE.LEVEL1_WIDTH, LEVEL_SIZE.LEVEL1_HEIGHT,'bg')
+        this.add.tileSprite(0,0,LEVEL_SIZE.LEVEL1_WIDTH, LEVEL_SIZE.LEVEL1_HEIGHT,'bg1')
         //this.add.tileSprite(0,0,gamePrefs.level1Width,gamePrefs.level1Height,'bg')
         //this.add.tileSprite(0,0,gamePrefs.gameWidth,gamePrefs.gameHeight,'bg')
         .setOrigin(0);
